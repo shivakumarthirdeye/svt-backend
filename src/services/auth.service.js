@@ -43,7 +43,7 @@ const logout = async refreshToken => {
   if (!refreshTokenDoc) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not found');
   }
-  await refreshTokenDoc.remove();
+  await refreshTokenDoc.deleteOne();
 };
 
 /**
@@ -133,7 +133,7 @@ const validateOtp = async (otp, name) => {
     'otp.value': otp,
   });
   if (!user) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect Otp');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Incorrect Otp');
   }
   return user;
 };
