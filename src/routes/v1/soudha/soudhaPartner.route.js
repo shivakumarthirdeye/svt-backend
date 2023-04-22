@@ -9,29 +9,34 @@ const router = express.Router();
 router
   .route('/partner')
   .patch(
-    auth(),
+    // auth(),
     validate(soudhaPartnerValidation.updatePartner),
     soudhaPartnerController.updateSoudhaPartner
   )
   .post(
-    auth(),
+    // auth(),
     validate(soudhaPartnerValidation.addPartner),
     soudhaPartnerController.addSoudhaPartner
   );
 
 router.get(
   '/partners',
-  auth(),
-  validate(soudhaPartnerValidation.getPartner),
+  // auth(),
+  validate(soudhaPartnerValidation.getPartners),
   soudhaPartnerController.getAllPartners
 );
 
 router
   .route('/partner/:partnerId')
   .delete(
-    auth(),
+    // auth(),
     validate(soudhaPartnerValidation.deletePartner),
     soudhaPartnerController.deletePartner
+  )
+  .get(
+    // auth(),
+    validate(soudhaPartnerValidation.getPartner),
+    soudhaPartnerController.getPartner
   );
 
 module.exports = router;

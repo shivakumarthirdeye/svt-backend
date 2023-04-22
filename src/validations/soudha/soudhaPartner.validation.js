@@ -21,7 +21,7 @@ const updatePartner = {
   }),
 };
 
-const getPartner = {
+const getPartners = {
   query: Joi.object().keys({
     sortBy: Joi.string(),
     limit: Joi.number().integer(),
@@ -33,9 +33,15 @@ const deletePartner = {
     partnerId: Joi.string().custom(objectId),
   }),
 };
+const getPartner = {
+  params: Joi.object().keys({
+    partnerId: Joi.string().custom(objectId),
+  }),
+};
 
 module.exports = {
   addPartner,
+  getPartners,
   getPartner,
   deletePartner,
   updatePartner,

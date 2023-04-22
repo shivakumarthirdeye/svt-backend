@@ -5,7 +5,7 @@ const paginate = require('../plugins/paginate.plugin');
 
 const SoudhaPartnerSchema = mongoose.Schema(
   {
-    partnerId: {
+    tableId: {
       type: String,
       unique: true,
     },
@@ -27,6 +27,12 @@ const SoudhaPartnerSchema = mongoose.Schema(
       enum: [soudhaPartnerStatus.ACTIVE, soudhaPartnerStatus.INACTIVE],
       required: true,
     },
+    consignments: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'BookedConsignments',
+      },
+    ],
   },
   {
     timestamps: true,

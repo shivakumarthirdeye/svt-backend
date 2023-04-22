@@ -6,7 +6,7 @@ const pick = require('../../utils/pick');
 const createPartner = async partnerBody => {
   const partnerData = {
     ...partnerBody,
-    partnerId: `${partnerBody.partnerName.split(' ')[0].toLowerCase()}-${
+    tableId: `${partnerBody.partnerName.split(' ')[0].toLowerCase()}-${
       (await SoudhaPartner.countDocuments({})) + 1
     }`,
   };
@@ -27,6 +27,14 @@ const getPartners = async req => {
 
   return SoudhaPartner.paginate(filter, options);
 };
+const getPartner = async partnerId => {
+  const partner = SoudhaPartner.findById(partnerId).populate('consignments');
+  if (!partner) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Partner not found');
+  }
+  return partner;
+};
+
 const deletePartner = async id => {
   const deletePartner = await SoudhaPartner.findById(id);
 
@@ -42,4 +50,5 @@ module.exports = {
   getPartners,
   deletePartner,
   updatePartner,
+  getPartner,
 };
