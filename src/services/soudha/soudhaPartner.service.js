@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const SoudhaPartner = require('../../models/soudha/soudhaPartner.modal');
 const ApiError = require('../../utils/ApiError');
 const pick = require('../../utils/pick');
+const bookedConsignmentService = require('./bookedConsignment.service');
 
 const createPartner = async partnerBody => {
   const partnerData = {
@@ -28,7 +29,7 @@ const getPartners = async req => {
   return SoudhaPartner.paginate(filter, options);
 };
 const getPartner = async partnerId => {
-  const partner = SoudhaPartner.findById(partnerId).populate('consignments');
+  const partner = SoudhaPartner.findById(partnerId);
   if (!partner) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Partner not found');
   }
@@ -40,6 +41,14 @@ const deletePartner = async id => {
 
   if (!deletePartner) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Partner not found');
+  }
+
+  if (deletePartner.consignments.length > 0) {
+    await Promise.all(
+      deletePartner.consignments.map(async element => {
+        await bookedConsignmentService.deleteConsignmentOfPartner(element);
+      })
+    );
   }
   await deletePartner.deleteOne();
   return deletePartner;

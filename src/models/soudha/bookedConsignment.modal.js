@@ -13,15 +13,15 @@ const BookedConsignmentSchema = mongoose.Schema(
       required: true,
     },
     bookedQuantity: {
-      type: String,
+      type: Number,
       required: true,
     },
     rate: {
-      type: String,
+      type: Number,
       required: true,
     },
     advancePayment: {
-      type: String,
+      type: Number,
     },
     partnerId: {
       type: mongoose.SchemaTypes.ObjectId,

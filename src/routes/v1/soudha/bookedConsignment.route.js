@@ -19,6 +19,16 @@ router
     auth(),
     validate(bookedConsignmentValidation.getConsignmentOfPartner),
     bookedConsignmentController.getConsignmentsByPartner
+  )
+  .patch(
+    auth(),
+    validate(bookedConsignmentValidation.updateConsignment),
+    bookedConsignmentController.updateConsignmentsByPartner
+  )
+  .delete(
+    auth(),
+    validate(bookedConsignmentValidation.deleteConsignmentOfPartner),
+    bookedConsignmentController.deleteConsignmentsByPartner
   );
 
 module.exports = router;
