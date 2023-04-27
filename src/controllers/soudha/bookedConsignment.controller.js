@@ -3,6 +3,7 @@ const catchAsync = require('../../utils/catchAsync');
 const {
   bookedConsignmentService,
   soudhaPartnerService,
+  receivedConsignmentService,
 } = require('../../services');
 
 const addBookedConsignment = catchAsync(async (req, res) => {
@@ -13,7 +14,7 @@ const addBookedConsignment = catchAsync(async (req, res) => {
 });
 
 const getConsignmentsByPartner = catchAsync(async (req, res) => {
-  const bookedConsignment =
+  const bookedConsignments =
     await bookedConsignmentService.getConsignmentOfPartner(req);
   const partnerId = req.params.partnerId;
 
@@ -21,14 +22,32 @@ const getConsignmentsByPartner = catchAsync(async (req, res) => {
     partnerId
   );
 
+  const receivedConsignTotalInfo = await Promise.all(
+    bookedConsignments.results.map(async element => {
+      const totalInfo =
+        await receivedConsignmentService.getReceivedConsignmentTotalInfo(
+          element._id
+        );
+      return { id: element._id, totalInfo: totalInfo[0] };
+    })
+  );
+
   const partner = await soudhaPartnerService.getPartner(req.params.partnerId);
-  res
-    .status(httpStatus.CREATED)
-    .send({
-      consignments: bookedConsignment,
-      partner,
-      totalInfo: totalInfo[0],
-    });
+
+  res.status(httpStatus.CREATED).send({
+    consignments: bookedConsignments,
+    partner,
+    totalInfo: totalInfo[0],
+    receivedConsignTotalInfo,
+  });
+});
+const getConsignment = catchAsync(async (req, res) => {
+  const bookedConsignment = await bookedConsignmentService.getConsignment(
+    req.query.consignmentId
+  );
+  res.status(httpStatus.CREATED).send({
+    bookedConsignment,
+  });
 });
 
 const updateConsignmentsByPartner = catchAsync(async (req, res) => {
@@ -51,4 +70,5 @@ module.exports = {
   getConsignmentsByPartner,
   deleteConsignmentsByPartner,
   updateConsignmentsByPartner,
+  getConsignment,
 };

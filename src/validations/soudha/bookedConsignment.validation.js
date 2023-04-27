@@ -12,6 +12,11 @@ const addConsignment = {
   }),
 };
 
+const getConsignment = {
+  params: Joi.object().keys({
+    consignmentId: Joi.string().custom(objectId),
+  }),
+};
 const getConsignmentOfPartner = {
   params: Joi.object().keys({
     partnerId: Joi.string().custom(objectId),
@@ -58,4 +63,5 @@ module.exports = {
   getConsignmentOfPartner,
   deleteConsignmentOfPartner,
   updateConsignment,
+  getConsignment,
 };

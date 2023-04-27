@@ -134,6 +134,7 @@ const validateOtp = async (otp, name) => {
     name,
     'otp.value': otp,
   });
+
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Incorrect Otp');
   }

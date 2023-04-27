@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { toJSON } = require('../plugins');
 const paginate = require('../plugins/paginate.plugin');
+const { bookedConsignmentStatus } = require('../../config/constant');
 
 const BookedConsignmentSchema = mongoose.Schema(
   {
@@ -20,6 +21,9 @@ const BookedConsignmentSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
+    averageRate: {
+      type: Number,
+    },
     advancePayment: {
       type: Number,
     },
@@ -27,6 +31,20 @@ const BookedConsignmentSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'SoudhaPartner',
     },
+    status: {
+      type: String,
+      enum: [
+        bookedConsignmentStatus.PENDING,
+        bookedConsignmentStatus.COMPLETED,
+      ],
+      default: 'pending',
+    },
+    receivedConsignments: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'ReceivedConsignments',
+      },
+    ],
   },
   {
     timestamps: true,
@@ -37,9 +55,20 @@ const BookedConsignmentSchema = mongoose.Schema(
 BookedConsignmentSchema.plugin(toJSON);
 BookedConsignmentSchema.plugin(paginate);
 
-/**
- * @typedef soudhaPartner
- */
+BookedConsignmentSchema.pre('save', function (next) {
+  const bookedConsignment = this;
+
+  bookedConsignment.averageRate =
+    bookedConsignment.bookedQuantity * bookedConsignment.rate;
+  next();
+});
+BookedConsignmentSchema.pre('updateOne', function (next) {
+  const bookedConsignment = this.getUpdate();
+
+  bookedConsignment.averageRate =
+    bookedConsignment.bookedQuantity * bookedConsignment.rate;
+  next();
+});
 const BookedConsignment = mongoose.model(
   'BookedConsignments',
   BookedConsignmentSchema

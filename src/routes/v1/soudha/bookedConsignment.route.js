@@ -13,6 +13,13 @@ router
     validate(bookedConsignmentValidation.addConsignment),
     bookedConsignmentController.addBookedConsignment
   );
+
+router.get(
+  '/consignment',
+  auth(),
+  // validate(bookedConsignmentValidation.getConsignment),
+  bookedConsignmentController.getConsignment
+);
 router
   .route('/consignment/:partnerId')
   .get(

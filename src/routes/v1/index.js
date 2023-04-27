@@ -4,6 +4,7 @@ const userRoute = require('./user.route');
 const docsRoute = require('./docs.route');
 const soudhaPartnerRoute = require('./soudha/soudhaPartner.route');
 const bookedConsignmentRoute = require('./soudha/bookedConsignment.route');
+const receivedConsignment = require('./soudha/receivedConsignment.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -24,6 +25,10 @@ const defaultRoutes = [
   {
     path: '/soudha',
     route: bookedConsignmentRoute,
+  },
+  {
+    path: '/soudha',
+    route: receivedConsignment,
   },
 ];
 

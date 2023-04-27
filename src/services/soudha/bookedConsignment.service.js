@@ -3,6 +3,7 @@ const { SoudhaPartner } = require('../../models');
 const { BookedConsignment } = require('../../models');
 const ApiError = require('../../utils/ApiError');
 const pick = require('../../utils/pick');
+const receivedConsignmentService = require('./receivedConsignment.service');
 
 const createConsignment = async partnerBody => {
   const bookedConsignment = await BookedConsignment.create(partnerBody);
@@ -46,17 +47,14 @@ const deleteConsignmentOfPartner = async id => {
     { $pull: { consignments: bookedConsignment._id } }
   );
 
-  return await bookedConsignment.deleteOne();
-};
-const deleteConsignmentWithPartnerId = async partnerId => {
-  console.log(
-    '🚀 ~ file: bookedConsignment.service.js:45 ~ deleteConsignmentWithPartnerId ~ partnerId:',
-    partnerId
-  );
-  const bookedConsignment = await BookedConsignment.findOne({ partnerId });
-  if (!bookedConsignment) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Consignment not found');
+  if (bookedConsignment.receivedConsignments.length > 0) {
+    await Promise.all(
+      bookedConsignment.receivedConsignments.map(async element => {
+        await receivedConsignmentService.deleteReceivedConsignment(element);
+      })
+    );
   }
+
   return await bookedConsignment.deleteOne();
 };
 
@@ -71,12 +69,22 @@ const getConsignmentTotalInfo = async partnerId => {
       $group: {
         _id: null,
         totalBookQuantity: { $sum: '$bookedQuantity' },
-        averageRate: { $avg: '$rate' },
+        averageRate: { $sum: '$averageRate' },
       },
     },
   ]);
 
   return totalInfo;
+};
+
+const getConsignment = async consignmentId => {
+  const bookedConsignment = await BookedConsignment.findById(
+    consignmentId
+  ).populate('partnerId');
+  if (!bookedConsignment) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Consignment not found');
+  }
+  return bookedConsignment;
 };
 
 module.exports = {
@@ -85,5 +93,5 @@ module.exports = {
   deleteConsignmentOfPartner,
   updateConsignmentOfPartner,
   getConsignmentTotalInfo,
-  deleteConsignmentWithPartnerId,
+  getConsignment,
 };

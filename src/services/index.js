@@ -4,3 +4,4 @@ module.exports.tokenService = require('./token.service');
 module.exports.userService = require('./user.service');
 module.exports.soudhaPartnerService = require('./soudha/soudhaPartner.service');
 module.exports.bookedConsignmentService = require('./soudha/bookedConsignment.service');
+module.exports.receivedConsignmentService = require('./soudha/receivedConsignment.service');
