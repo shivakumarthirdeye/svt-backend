@@ -13,6 +13,9 @@ const userSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    phoneNo: {
+      type: String,
+    },
     email: {
       type: String,
       required: true,
@@ -47,13 +50,18 @@ const userSchema = mongoose.Schema(
       enum: roles,
       default: 'user',
     },
-    isEmailVerified: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      default: 'active',
     },
+    // isEmailVerified: {
+    //   type: Boolean,
+    //   default: false,
+    // },
     otp: {
       value: {
         type: Number,
+        default: 123456,
       },
       expires: {
         type: Date,

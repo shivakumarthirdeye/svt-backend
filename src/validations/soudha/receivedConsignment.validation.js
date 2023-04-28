@@ -44,7 +44,7 @@ const updateReceivedConsignment = {
     billingQuantity: Joi.number().required(),
     billingRate: Joi.number().required(),
     totalBillingAmount: Joi.number().required(),
-    otherAmount: Joi.number().allow(''),
+    otherAmount: Joi.number().allow(null),
     vehicleNo: Joi.string().required(),
     unloadQuantity: Joi.number().required(),
     shortQuantity: Joi.number().required(),
