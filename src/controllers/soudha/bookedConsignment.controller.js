@@ -50,6 +50,12 @@ const getConsignment = catchAsync(async (req, res) => {
   });
 });
 
+const getAllPendingConsignments = catchAsync(async (req, res) => {
+  const pendingConsignments =
+    await bookedConsignmentService.getPendingConsignment(req);
+  res.status(httpStatus.OK).send({ pendingConsignments });
+});
+
 const updateConsignmentsByPartner = catchAsync(async (req, res) => {
   const consignments =
     await bookedConsignmentService.updateConsignmentOfPartner(req);
@@ -71,4 +77,5 @@ module.exports = {
   deleteConsignmentsByPartner,
   updateConsignmentsByPartner,
   getConsignment,
+  getAllPendingConsignments,
 };

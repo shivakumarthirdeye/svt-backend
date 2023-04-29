@@ -20,6 +20,12 @@ router.get(
   // validate(bookedConsignmentValidation.getConsignment),
   bookedConsignmentController.getConsignment
 );
+router.get(
+  '/consignment/pendingConsignment',
+  auth(),
+  // validate(bookedConsignmentValidation.getConsignment),
+  bookedConsignmentController.getAllPendingConsignments
+);
 router
   .route('/consignment/:partnerId')
   .get(

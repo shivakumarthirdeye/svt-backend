@@ -9,7 +9,7 @@ const createUser = {
     name: Joi.string().required(),
     // role: Joi.string().required().valid('user', 'admin'),
     status: Joi.string(),
-    phoneNo: Joi.string(),
+    phoneNo: Joi.number().allow(''),
   }),
 };
 
@@ -42,7 +42,7 @@ const updateUser = {
       name: Joi.string().required(),
       // role: Joi.string().required().valid('user', 'admin'),
       status: Joi.string(),
-      phoneNo: Joi.string(),
+      phoneNo: Joi.number().allow(''),
     })
     .min(1),
 };

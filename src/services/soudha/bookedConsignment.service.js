@@ -58,6 +58,22 @@ const deleteConsignmentOfPartner = async id => {
   return await bookedConsignment.deleteOne();
 };
 
+const getPendingConsignment = async req => {
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  options.populate = 'partnerId';
+
+  const filter = {
+    status: 'pending',
+  };
+  console.log(
+    '🚀 ~ file: bookedConsignment.service.js:63 ~ getPendingConsignment ~ options:',
+    options
+  );
+
+  const pendingConsignment = await BookedConsignment.paginate(filter, options);
+  return pendingConsignment;
+};
+
 const getConsignmentTotalInfo = async partnerId => {
   const totalInfo = await BookedConsignment.aggregate([
     {
@@ -94,4 +110,5 @@ module.exports = {
   updateConsignmentOfPartner,
   getConsignmentTotalInfo,
   getConsignment,
+  getPendingConsignment,
 };
