@@ -39,6 +39,10 @@ const BookedConsignmentSchema = mongoose.Schema(
       ],
       default: 'pending',
     },
+    createdBy: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
+    },
     receivedConsignments: [
       {
         type: mongoose.SchemaTypes.ObjectId,

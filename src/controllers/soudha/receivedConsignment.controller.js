@@ -7,7 +7,7 @@ const {
 
 const addReceivedConsignment = catchAsync(async (req, res) => {
   const consignment =
-    await receivedConsignmentService.createReceivedConsignment(req.body);
+    await receivedConsignmentService.createReceivedConsignment(req);
   res.status(httpStatus.CREATED).send({ consignment });
 });
 

@@ -45,6 +45,10 @@ const ReceivedConsignmentSchema = mongoose.Schema(
     otherAmount: {
       type: Number,
     },
+    createdBy: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
+    },
     bookedConsignmentId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'SoudhaPartner',

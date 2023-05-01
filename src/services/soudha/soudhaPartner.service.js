@@ -4,7 +4,12 @@ const ApiError = require('../../utils/ApiError');
 const pick = require('../../utils/pick');
 const bookedConsignmentService = require('./bookedConsignment.service');
 
-const createPartner = async partnerBody => {
+const createPartner = async req => {
+  const partnerBody = {
+    ...req.body,
+    createdBy: req.user._id,
+  };
+
   const partnerData = {
     ...partnerBody,
     tableId: `${partnerBody.partnerName.split(' ')[0].toLowerCase()}-${
@@ -24,6 +29,13 @@ const updatePartner = async body => {
 };
 const getPartners = async req => {
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  options.populate = [
+    {
+      path: 'createdBy',
+      select: 'name',
+    },
+  ];
+
   const filter = {};
 
   return SoudhaPartner.paginate(filter, options);

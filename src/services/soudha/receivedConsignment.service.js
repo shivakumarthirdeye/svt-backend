@@ -4,12 +4,13 @@ const { BookedConsignment } = require('../../models');
 const ApiError = require('../../utils/ApiError');
 const pick = require('../../utils/pick');
 
-const createReceivedConsignment = async receivedItem => {
+const createReceivedConsignment = async req => {
+  const receivedItem = {
+    ...req.body,
+    createdBy: req.user._id,
+  };
+
   const receivedConsignment = await ReceivedConsignment.create(receivedItem);
-  console.log(
-    '🚀 ~ file: receivedConsignment.service.js:9 ~ createReceivedConsignment ~ receivedConsignment:',
-    receivedConsignment
-  );
 
   await BookedConsignment.findByIdAndUpdate(receivedItem.bookedConsignmentId, {
     $push: { receivedConsignments: receivedConsignment._id },
@@ -20,6 +21,12 @@ const createReceivedConsignment = async receivedItem => {
 
 const getReceivedConsignmentsByBooked = async req => {
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  options.populate = [
+    {
+      path: 'createdBy',
+      select: 'name',
+    },
+  ];
   const filter = {
     bookedConsignmentId: req.params.bookedConsignmentId,
   };

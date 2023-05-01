@@ -27,6 +27,10 @@ const SoudhaPartnerSchema = mongoose.Schema(
       enum: [soudhaPartnerStatus.ACTIVE, soudhaPartnerStatus.INACTIVE],
       required: true,
     },
+    createdBy: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
+    },
     consignments: [
       {
         type: mongoose.SchemaTypes.ObjectId,

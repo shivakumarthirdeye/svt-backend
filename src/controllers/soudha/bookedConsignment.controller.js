@@ -7,9 +7,7 @@ const {
 } = require('../../services');
 
 const addBookedConsignment = catchAsync(async (req, res) => {
-  const consignment = await bookedConsignmentService.createConsignment(
-    req.body
-  );
+  const consignment = await bookedConsignmentService.createConsignment(req);
   res.status(httpStatus.CREATED).send({ consignment });
 });
 
@@ -53,7 +51,20 @@ const getConsignment = catchAsync(async (req, res) => {
 const getAllPendingConsignments = catchAsync(async (req, res) => {
   const pendingConsignments =
     await bookedConsignmentService.getPendingConsignment(req);
-  res.status(httpStatus.OK).send({ pendingConsignments });
+
+  const receivedConsignTotalInfo = await Promise.all(
+    pendingConsignments.results.map(async element => {
+      const totalInfo =
+        await receivedConsignmentService.getReceivedConsignmentTotalInfo(
+          element._id
+        );
+
+      return { id: element._id, totalInfo: totalInfo[0] };
+    })
+  );
+  res
+    .status(httpStatus.OK)
+    .send({ pendingConsignments, receivedConsignTotalInfo });
 });
 
 const updateConsignmentsByPartner = catchAsync(async (req, res) => {

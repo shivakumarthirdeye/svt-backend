@@ -11,6 +11,12 @@ const createUser = catchAsync(async (req, res) => {
 
 const getUsers = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name', 'role']);
+  console.log('🚀 ~ file: user.controller.js:14 ~ getUsers ~ filter:', filter);
+  if (filter.name) {
+    filter.name = { $regex: filter.name, $options: 'i' };
+  }
+  console.log('🚀 ~ file: user.controller.js:14 ~ getUsers ~ filter:', filter);
+
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await userService.queryUsers(filter, options);
   res.send(result);

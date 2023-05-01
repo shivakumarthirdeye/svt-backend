@@ -6,7 +6,7 @@ const {
 } = require('../../services');
 
 const addSoudhaPartner = catchAsync(async (req, res) => {
-  const partner = await soudhaPartnerService.createPartner(req.body);
+  const partner = await soudhaPartnerService.createPartner(req);
   res.status(httpStatus.CREATED).send({ partner });
 });
 

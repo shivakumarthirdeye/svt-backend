@@ -5,7 +5,11 @@ const ApiError = require('../../utils/ApiError');
 const pick = require('../../utils/pick');
 const receivedConsignmentService = require('./receivedConsignment.service');
 
-const createConsignment = async partnerBody => {
+const createConsignment = async req => {
+  const partnerBody = {
+    ...req.body,
+    createdBy: req.user._id,
+  };
   const bookedConsignment = await BookedConsignment.create(partnerBody);
 
   await SoudhaPartner.findByIdAndUpdate(partnerBody.partnerId, {
@@ -17,6 +21,12 @@ const createConsignment = async partnerBody => {
 
 const getConsignmentOfPartner = async req => {
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  options.populate = [
+    {
+      path: 'createdBy',
+      select: 'name',
+    },
+  ];
   const filter = {
     partnerId: req.params.partnerId,
   };
@@ -65,10 +75,6 @@ const getPendingConsignment = async req => {
   const filter = {
     status: 'pending',
   };
-  console.log(
-    '🚀 ~ file: bookedConsignment.service.js:63 ~ getPendingConsignment ~ options:',
-    options
-  );
 
   const pendingConsignment = await BookedConsignment.paginate(filter, options);
   return pendingConsignment;
