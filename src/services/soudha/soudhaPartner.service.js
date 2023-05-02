@@ -28,7 +28,7 @@ const updatePartner = async body => {
   return partner.updateOne(body);
 };
 const getPartners = async req => {
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page', 'q']);
   options.populate = [
     {
       path: 'createdBy',
@@ -36,7 +36,11 @@ const getPartners = async req => {
     },
   ];
 
-  const filter = {};
+  const filter = pick(req.query, ['partnerName']);
+
+  if (filter.partnerName) {
+    filter.partnerName = { $regex: filter.partnerName, $options: 'i' };
+  }
 
   return SoudhaPartner.paginate(filter, options);
 };

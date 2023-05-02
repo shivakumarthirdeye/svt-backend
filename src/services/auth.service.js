@@ -7,6 +7,7 @@ const { tokenTypes } = require('../config/tokens');
 const { User } = require('../models');
 const moment = require('moment');
 const { jwt } = require('../config/config');
+const otpService = require('./otp.service');
 
 /**
  * Login with username and password
@@ -65,7 +66,6 @@ const refreshAuth = async refreshToken => {
     await refreshTokenDoc.deleteOne();
     return tokenService.generateAuthTokens(user);
   } catch (error) {
-    console.log('🚀 ~ file: auth.service.js:68 ~ refreshAuth ~ error:', error);
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate');
   }
 };
@@ -120,25 +120,50 @@ const assignOtp = async name => {
   if (!user) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect name or password');
   }
-  await User.findByIdAndUpdate(user.id, {
-    otp: {
-      value: Math.floor(100000 + Math.random() * 900000),
-      expires: moment().add(jwt.otpExpirationMinutes, 'minutes'),
+  const updatedUser = await User.findByIdAndUpdate(
+    user.id,
+    {
+      otp: {
+        value: Math.floor(100000 + Math.random() * 900000),
+        expires: moment().add(jwt.otpExpirationMinutes, 'minutes'),
+      },
     },
-  });
+    {
+      new: true,
+    }
+  );
 
-  return user;
+  // await otpService.sendOtp({
+  //   phone: updatedUser.phoneNo,
+  //   otp: updatedUser.otp.value,
+  // });
+
+  return updatedUser;
 };
 const validateOtp = async (otp, name) => {
+  const currentDateTime = moment();
+
   const user = await User.findOne({
     name,
     'otp.value': otp,
+    'otp.expires': { $gt: currentDateTime.toDate() },
   });
 
   if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Incorrect Otp');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Incorrect OTP or OTP Expired');
   }
   return user;
+};
+
+const clearOtp = async name => {
+  const user = await User.findOne({
+    name,
+  });
+
+  return await user.updateOne({
+    'otp.value': null,
+    'otp.expires': null,
+  });
 };
 
 module.exports = {
@@ -150,4 +175,5 @@ module.exports = {
   verifyEmail,
   validateOtp,
   assignOtp,
+  clearOtp,
 };

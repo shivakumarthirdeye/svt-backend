@@ -16,8 +16,8 @@ const register = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   const { name, password } = req.body;
   // const user = await authService.loginUserWithEmailAndPassword(email, password);
-  const user = await authService.loginUserWithNameAndPassword(name, password);
-  // await authService.assignOtp(name);
+  await authService.loginUserWithNameAndPassword(name, password);
+  const user = await authService.assignOtp(name);
 
   // const tokens = await tokenService.generateAuthTokens(user);
 
@@ -30,6 +30,8 @@ const verifyOtp = catchAsync(async (req, res) => {
   const user = await authService.validateOtp(otp, name);
 
   const tokens = await tokenService.generateAuthTokens(user);
+
+  await authService.clearOtp(user.name);
 
   res.send({ user, tokens });
 });

@@ -26,6 +26,7 @@ const getPartners = {
     sortBy: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
+    partnerName: Joi.string().allow(''),
   }),
 };
 const deletePartner = {
