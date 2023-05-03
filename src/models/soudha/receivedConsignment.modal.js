@@ -36,6 +36,10 @@ const ReceivedConsignmentSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
+    gst: {
+      type: Number,
+      required: true,
+    },
     difference: {
       type: Number,
     },

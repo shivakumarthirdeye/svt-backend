@@ -4,6 +4,8 @@ const { BookedConsignment } = require('../../models');
 const ApiError = require('../../utils/ApiError');
 const pick = require('../../utils/pick');
 const receivedConsignmentService = require('./receivedConsignment.service');
+const { bookedConsignmentStatus } = require('../../config/constant');
+const soudhaPartnerService = require('./soudhaPartner.service');
 
 const createConsignment = async req => {
   const partnerBody = {
@@ -15,6 +17,12 @@ const createConsignment = async req => {
   await SoudhaPartner.findByIdAndUpdate(partnerBody.partnerId, {
     $push: { consignments: bookedConsignment.id },
   });
+
+  if (await getBookingStatus(bookedConsignment.partnerId)) {
+    await changePartnerStatusCompleted(bookedConsignment.partnerId);
+  } else {
+    await changePartnerStatusPending(bookedConsignment.partnerId);
+  }
 
   return bookedConsignment;
 };
@@ -40,11 +48,20 @@ const getConsignmentOfPartner = async req => {
 
 const updateConsignmentOfPartner = async req => {
   const bookedConsignment = await BookedConsignment.findById(req.body.id);
+
   if (!bookedConsignment) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Consignment not found');
   }
-  return await bookedConsignment.updateOne(req.body);
+  const updateConsignment = await bookedConsignment.updateOne(req.body);
+  if (await getBookingStatus(bookedConsignment.partnerId)) {
+    await changePartnerStatusCompleted(bookedConsignment.partnerId);
+  } else {
+    await changePartnerStatusPending(bookedConsignment.partnerId);
+  }
+
+  return updateConsignment;
 };
+
 const deleteConsignmentOfPartner = async id => {
   const bookedConsignment = await BookedConsignment.findById(id);
 
@@ -109,6 +126,42 @@ const getConsignment = async consignmentId => {
   return bookedConsignment;
 };
 
+const getBookingStatus = async partnerId => {
+  const partnersConsignments = await BookedConsignment.find({ partnerId });
+
+  // const isAllCompleted = await Promise.all(
+  //   partnersConsignments.every(function (element) {
+  //     return element.status === bookedConsignmentStatus.COMPLETED;
+  //   })
+  // );
+
+  const isAllCompleted = await partnersConsignments.every(function (element) {
+    return element.status === bookedConsignmentStatus.COMPLETED;
+  });
+
+  return isAllCompleted;
+};
+
+const changePartnerStatusCompleted = async id => {
+  const partner = SoudhaPartner.findById(id);
+
+  if (!partner) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Partner not found');
+  }
+  return partner.updateOne({
+    soudhaStatus: bookedConsignmentStatus.COMPLETED,
+  });
+};
+const changePartnerStatusPending = async id => {
+  const partner = SoudhaPartner.findById(id);
+
+  if (!partner) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Partner not found');
+  }
+  return partner.updateOne({
+    soudhaStatus: bookedConsignmentStatus.PENDING,
+  });
+};
 module.exports = {
   createConsignment,
   getConsignmentOfPartner,
@@ -117,4 +170,5 @@ module.exports = {
   getConsignmentTotalInfo,
   getConsignment,
   getPendingConsignment,
+  getBookingStatus,
 };

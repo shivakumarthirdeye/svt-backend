@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const { objectId } = require('../custom.validation');
+const { bookedConsignmentStatus } = require('../../config/constant');
 
 const addConsignment = {
   body: Joi.object().keys({
@@ -9,6 +10,9 @@ const addConsignment = {
     rate: Joi.number().required(),
     advancePayment: Joi.number(),
     partnerId: Joi.string().custom(objectId),
+    status: Joi.string()
+      .required()
+      .valid(...Object.values(bookedConsignmentStatus)),
   }),
 };
 
@@ -37,6 +41,9 @@ const updateConsignment = {
     bookedQuantity: Joi.number().required(),
     rate: Joi.number().required(),
     advancePayment: Joi.number(),
+    status: Joi.string()
+      .required()
+      .valid(...Object.values(bookedConsignmentStatus)),
   }),
 };
 

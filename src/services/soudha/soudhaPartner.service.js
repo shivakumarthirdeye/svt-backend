@@ -1,8 +1,10 @@
 const httpStatus = require('http-status');
 const SoudhaPartner = require('../../models/soudha/soudhaPartner.modal');
+
 const ApiError = require('../../utils/ApiError');
 const pick = require('../../utils/pick');
 const bookedConsignmentService = require('./bookedConsignment.service');
+const { bookedConsignmentStatus } = require('../../config/constant');
 
 const createPartner = async req => {
   const partnerBody = {
@@ -70,10 +72,22 @@ const deletePartner = async id => {
   return deletePartner;
 };
 
+const changePartnerStatusCompleted = async id => {
+  const partner = SoudhaPartner.findById(id);
+
+  if (!partner) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Partner not found');
+  }
+  return partner.updateOne({
+    soudhaStatus: bookedConsignmentStatus.COMPLETED,
+  });
+};
+
 module.exports = {
   createPartner,
   getPartners,
   deletePartner,
   updatePartner,
   getPartner,
+  changePartnerStatusCompleted,
 };

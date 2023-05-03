@@ -68,9 +68,10 @@ const getAllPendingConsignments = catchAsync(async (req, res) => {
 });
 
 const updateConsignmentsByPartner = catchAsync(async (req, res) => {
-  const consignments =
+  const updateConsignment =
     await bookedConsignmentService.updateConsignmentOfPartner(req);
-  res.status(httpStatus.OK).send({ consignments });
+
+  res.status(httpStatus.OK).send({ consignments: updateConsignment });
 });
 
 const deleteConsignmentsByPartner = catchAsync(async (req, res) => {

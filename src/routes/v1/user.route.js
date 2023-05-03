@@ -15,6 +15,8 @@ router
   )
   .get(auth(), validate(userValidation.getUsers), userController.getUsers);
 
+router.get('/getDetails', auth(), userController.getCurrentUser);
+
 router
   .route('/:userId')
   .get(

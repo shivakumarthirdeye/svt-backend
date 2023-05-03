@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const { toJSON } = require('../plugins');
-const { soudhaPartnerStatus } = require('../../config/constant');
+const {
+  soudhaPartnerStatus,
+  bookedConsignmentStatus,
+} = require('../../config/constant');
 const paginate = require('../plugins/paginate.plugin');
 
 const SoudhaPartnerSchema = mongoose.Schema(
@@ -26,6 +29,15 @@ const SoudhaPartnerSchema = mongoose.Schema(
       type: String,
       enum: [soudhaPartnerStatus.ACTIVE, soudhaPartnerStatus.INACTIVE],
       required: true,
+    },
+    soudhaStatus: {
+      type: String,
+      enum: [
+        bookedConsignmentStatus.PENDING,
+        bookedConsignmentStatus.COMPLETED,
+      ],
+      required: true,
+      default: bookedConsignmentStatus.PENDING,
     },
     createdBy: {
       type: mongoose.SchemaTypes.ObjectId,

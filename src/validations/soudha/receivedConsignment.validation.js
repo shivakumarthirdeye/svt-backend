@@ -15,6 +15,7 @@ const addReceivedConsignment = {
     payment: Joi.number().allow(''),
     bookedConsignmentId: Joi.string().custom(objectId),
     difference: Joi.number(),
+    gst: Joi.number().required(),
   }),
 };
 
@@ -49,6 +50,7 @@ const updateReceivedConsignment = {
     unloadQuantity: Joi.number().required(),
     shortQuantity: Joi.number().required(),
     payment: Joi.number().allow(''),
+    gst: Joi.number().required(),
     bookedConsignmentId: Joi.string().custom(objectId),
     difference: Joi.number(),
   }),
