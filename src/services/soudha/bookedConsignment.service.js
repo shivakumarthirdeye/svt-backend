@@ -35,9 +35,18 @@ const getConsignmentOfPartner = async req => {
       select: 'name',
     },
   ];
+
+  const filters = pick(req.query, ['oilType', 'status']);
+
+  if (filters.oilType) {
+    filters.oilType = { $regex: filters.oilType, $options: 'i' };
+  }
+
   const filter = {
     partnerId: req.params.partnerId,
+    ...filters,
   };
+
   const bookedConsignment = await BookedConsignment.paginate(filter, options);
 
   if (!bookedConsignment) {
@@ -97,21 +106,41 @@ const getPendingConsignment = async req => {
   return pendingConsignment;
 };
 
-const getConsignmentTotalInfo = async partnerId => {
-  const totalInfo = await BookedConsignment.aggregate([
-    {
-      $match: {
-        $expr: { $eq: ['$partnerId', { $toObjectId: partnerId }] },
+const getConsignmentTotalInfo = async (partnerId, isPending) => {
+  let totalInfo;
+
+  if (isPending) {
+    totalInfo = await BookedConsignment.aggregate([
+      {
+        $match: {
+          $expr: { $eq: ['$partnerId', { $toObjectId: partnerId }] },
+          status: 'pending',
+        },
       },
-    },
-    {
-      $group: {
-        _id: null,
-        totalBookQuantity: { $sum: '$bookedQuantity' },
-        averageRate: { $sum: '$averageRate' },
+      {
+        $group: {
+          _id: null,
+          totalBookQuantity: { $sum: '$bookedQuantity' },
+          averageRate: { $sum: '$averageRate' },
+        },
       },
-    },
-  ]);
+    ]);
+  } else {
+    totalInfo = await BookedConsignment.aggregate([
+      {
+        $match: {
+          $expr: { $eq: ['$partnerId', { $toObjectId: partnerId }] },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalBookQuantity: { $sum: '$bookedQuantity' },
+          averageRate: { $sum: '$averageRate' },
+        },
+      },
+    ]);
+  }
 
   return totalInfo;
 };

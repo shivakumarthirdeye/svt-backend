@@ -29,6 +29,14 @@ const getPartners = {
     partnerName: Joi.string().allow(''),
   }),
 };
+const getPendingPartners = {
+  query: Joi.object().keys({
+    sortBy: Joi.string(),
+    limit: Joi.number().integer(),
+    page: Joi.number().integer(),
+    partnerName: Joi.string().allow(''),
+  }),
+};
 const deletePartner = {
   params: Joi.object().keys({
     partnerId: Joi.string().custom(objectId),
@@ -46,4 +54,5 @@ module.exports = {
   getPartner,
   deletePartner,
   updatePartner,
+  getPendingPartners,
 };

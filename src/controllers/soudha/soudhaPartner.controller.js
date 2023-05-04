@@ -24,6 +24,24 @@ const getAllPartners = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ partners, totalInfo });
 });
 
+const getPendingPartners = catchAsync(async (req, res) => {
+  const pendingPartners = await soudhaPartnerService.getPendingSoudhaPartner(
+    req
+  );
+  const totalInfo = await Promise.all(
+    pendingPartners.results.map(async element => {
+      const totalInfo = await bookedConsignmentService.getConsignmentTotalInfo(
+        element._id,
+        true
+      );
+
+      return { id: element._id, totalInfo: totalInfo[0] };
+    })
+  );
+
+  res.status(httpStatus.OK).send({ pendingPartners, totalInfo });
+});
+
 const getPartner = catchAsync(async (req, res) => {
   const partnerId = req.params.partnerId;
   const partner = await soudhaPartnerService.getPartner(partnerId);
@@ -39,7 +57,7 @@ const updateSoudhaPartner = catchAsync(async (req, res) => {
 const deletePartner = catchAsync(async (req, res) => {
   const id = req.params.partnerId;
 
-  const partners = await soudhaPartnerService.deletePartner(id);
+  await soudhaPartnerService.deletePartner(id);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
@@ -49,4 +67,5 @@ module.exports = {
   deletePartner,
   updateSoudhaPartner,
   getPartner,
+  getPendingPartners,
 };

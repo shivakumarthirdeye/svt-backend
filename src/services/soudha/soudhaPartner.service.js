@@ -30,7 +30,7 @@ const updatePartner = async body => {
   return partner.updateOne(body);
 };
 const getPartners = async req => {
-  const options = pick(req.query, ['sortBy', 'limit', 'page', 'q']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
   options.populate = [
     {
       path: 'createdBy',
@@ -83,6 +83,24 @@ const changePartnerStatusCompleted = async id => {
   });
 };
 
+const getPendingSoudhaPartner = async req => {
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+
+  const filters = pick(req.query, ['partnerName']);
+
+  if (filters.partnerName) {
+    filters.partnerName = { $regex: filters.partnerName, $options: 'i' };
+  }
+
+  const filter = {
+    soudhaStatus: 'pending',
+    ...filters,
+  };
+
+  const pendingSoudhaPartner = await SoudhaPartner.paginate(filter, options);
+  return pendingSoudhaPartner;
+};
+
 module.exports = {
   createPartner,
   getPartners,
@@ -90,4 +108,5 @@ module.exports = {
   updatePartner,
   getPartner,
   changePartnerStatusCompleted,
+  getPendingSoudhaPartner,
 };

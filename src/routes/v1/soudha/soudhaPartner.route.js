@@ -25,6 +25,12 @@ router.get(
   validate(soudhaPartnerValidation.getPartners),
   soudhaPartnerController.getAllPartners
 );
+router.get(
+  '/partner/pendingPartners',
+  auth(),
+  validate(soudhaPartnerValidation.getPendingPartners),
+  soudhaPartnerController.getPendingPartners
+);
 
 router
   .route('/partner/:partnerId')
