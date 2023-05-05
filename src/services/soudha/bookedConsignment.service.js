@@ -6,6 +6,7 @@ const pick = require('../../utils/pick');
 const receivedConsignmentService = require('./receivedConsignment.service');
 const { bookedConsignmentStatus } = require('../../config/constant');
 const soudhaPartnerService = require('./soudhaPartner.service');
+const moment = require('moment');
 
 const createConsignment = async req => {
   const partnerBody = {
@@ -36,16 +37,40 @@ const getConsignmentOfPartner = async req => {
     },
   ];
 
-  const filters = pick(req.query, ['oilType', 'status']);
+  const filters = pick(req.query, [
+    'oilType',
+    'status',
+    'startDate',
+    'endDate',
+  ]);
 
-  if (filters.oilType) {
+  if (filters?.oilType) {
     filters.oilType = { $regex: filters.oilType, $options: 'i' };
   }
+  if (filters?.startDate && filters?.endDate) {
+    filters.bookingDate = {
+      $gte: new Date(new Date(filters?.startDate).setHours(00, 00, 00)),
+      $lte: new Date(new Date(filters?.endDate).setHours(23, 59, 59)),
+    };
+  }
+
+  // filters.bookingDate = {
+  //   $gte: new Date(new Date('2023-05-01').setHours(00, 00, 00)),
+  //   $lte: new Date(new Date('2023-05-03').setHours(00, 00, 00)),
+  // };
 
   const filter = {
     partnerId: req.params.partnerId,
     ...filters,
   };
+
+  delete filter.startDate;
+  delete filter.endDate;
+
+  console.log(
+    '🚀 ~ file: bookedConsignment.service.js:57 ~ getConsignmentOfPartner ~ filter:',
+    filter
+  );
 
   const bookedConsignment = await BookedConsignment.paginate(filter, options);
 

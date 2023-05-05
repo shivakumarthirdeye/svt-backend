@@ -10,6 +10,7 @@ const pick = (object, keys) => {
       object &&
       Object.prototype.hasOwnProperty.call(object, key) &&
       object[key] &&
+      object[key] !== 'undefined' &&
       object[key] !== 'null' &&
       object[key] !== null
     ) {
