@@ -27,8 +27,16 @@ const getReceivedConsignmentsByBooked = async req => {
       select: 'name',
     },
   ];
+
+  const filters = pick(req.query, ['billNo']);
+
+  if (filters?.billNo) {
+    filters.billNo = { $regex: filters.billNo, $options: 'i' };
+  }
+
   const filter = {
     bookedConsignmentId: req.params.bookedConsignmentId,
+    ...filters,
   };
   const received = await ReceivedConsignment.paginate(filter, options);
 
