@@ -9,6 +9,8 @@ const addConsignment = {
     bookedQuantity: Joi.number().required(),
     rate: Joi.number().required(),
     advancePayment: Joi.number(),
+    gst: Joi.number().required(),
+
     partnerId: Joi.string().custom(objectId),
     status: Joi.string()
       .required()
@@ -40,6 +42,7 @@ const updateConsignment = {
     oilType: Joi.string().required(),
     bookedQuantity: Joi.number().required(),
     rate: Joi.number().required(),
+    gst: Joi.number().required(),
     advancePayment: Joi.number(),
     status: Joi.string()
       .required()

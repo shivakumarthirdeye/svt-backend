@@ -27,6 +27,9 @@ const BookedConsignmentSchema = mongoose.Schema(
     advancePayment: {
       type: Number,
     },
+    gst: {
+      type: Number,
+    },
     partnerId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'SoudhaPartner',

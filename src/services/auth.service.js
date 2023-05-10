@@ -24,6 +24,11 @@ const loginUserWithEmailAndPassword = async (email, password) => {
 };
 const loginUserWithNameAndPassword = async (name, password) => {
   const user = await userService.getUserByName(name);
+  console.log(
+    '🚀 ~ file: auth.service.js:27 ~ loginUserWithNameAndPassword ~ user:',
+    user
+  );
+
   if (!user || !(await user.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect name or password');
   }
@@ -82,6 +87,7 @@ const resetPassword = async (resetPasswordToken, newPassword) => {
       resetPasswordToken,
       tokenTypes.RESET_PASSWORD
     );
+
     const user = await userService.getUserById(resetPasswordTokenDoc.user);
     if (!user) {
       throw new Error();
@@ -115,11 +121,16 @@ const verifyEmail = async verifyEmailToken => {
   }
 };
 
-const assignOtp = async name => {
+const assignOtp = async (name, isResetPassword) => {
   const user = await userService.getUserByName(name);
+
+  if (isResetPassword && !user) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'No user with this name');
+  }
   if (!user) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect name or password');
   }
+
   const updatedUser = await User.findByIdAndUpdate(
     user.id,
     {
