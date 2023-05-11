@@ -80,24 +80,48 @@ const updateReceivedConsignment = async req => {
   // return await receivedConsignment.deleteOne();
 };
 
-const getReceivedConsignmentTotalInfo = async bookedConsignmentId => {
-  const totalInfo = await ReceivedConsignment.aggregate([
-    {
-      $match: {
-        $expr: {
-          $eq: ['$bookedConsignmentId', { $toObjectId: bookedConsignmentId }],
+const getReceivedConsignmentTotalInfo = async (
+  bookedConsignmentId,
+  isPending
+) => {
+  let totalInfo;
+  if (isPending) {
+    totalInfo = await ReceivedConsignment.aggregate([
+      {
+        $match: {
+          $expr: {
+            $eq: ['$bookedConsignmentId', { $toObjectId: bookedConsignmentId }],
+          },
         },
       },
-    },
-    {
-      $group: {
-        _id: null,
-        totalPendingConsignment: { $sum: '$billingQuantity' },
-        differenceAmount: { $sum: '$difference' },
-        pendingPayment: { $sum: '$payment' },
+      {
+        $group: {
+          _id: null,
+          totalPendingConsignment: { $sum: '$billingQuantity' },
+          differenceAmount: { $sum: '$difference' },
+          pendingPayment: { $sum: '$payment' },
+        },
       },
-    },
-  ]);
+    ]);
+  } else {
+    totalInfo = await ReceivedConsignment.aggregate([
+      {
+        $match: {
+          $expr: {
+            $eq: ['$bookedConsignmentId', { $toObjectId: bookedConsignmentId }],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalPendingConsignment: { $sum: '$billingQuantity' },
+          differenceAmount: { $sum: '$difference' },
+          pendingPayment: { $sum: '$payment' },
+        },
+      },
+    ]);
+  }
 
   return totalInfo;
 };

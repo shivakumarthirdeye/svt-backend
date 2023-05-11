@@ -3,6 +3,7 @@ const catchAsync = require('../../utils/catchAsync');
 const {
   soudhaPartnerService,
   bookedConsignmentService,
+  receivedConsignmentService,
 } = require('../../services');
 
 const addSoudhaPartner = catchAsync(async (req, res) => {
@@ -28,6 +29,12 @@ const getPendingPartners = catchAsync(async (req, res) => {
   const pendingPartners = await soudhaPartnerService.getPendingSoudhaPartner(
     req
   );
+
+  console.log(
+    '🚀 ~ file: soudhaPartner.controller.js:32 ~ getPendingPartners ~ pendingPartners:',
+    pendingPartners
+  );
+
   const totalInfo = await Promise.all(
     pendingPartners.results.map(async element => {
       const totalInfo = await bookedConsignmentService.getConsignmentTotalInfo(
@@ -39,7 +46,26 @@ const getPendingPartners = catchAsync(async (req, res) => {
     })
   );
 
-  res.status(httpStatus.OK).send({ pendingPartners, totalInfo });
+  const receivedConsignTotalInfo = await Promise.all(
+    pendingPartners.results.map(async element => {
+      return await Promise.all(
+        element.consignments.map(async item => {
+          const totalInfo =
+            await receivedConsignmentService.getReceivedConsignmentTotalInfo(
+              item._id
+            );
+
+          return { id: element._id, totalInfo: totalInfo[0] };
+        })
+      );
+    })
+  );
+
+  res.status(httpStatus.OK).send({
+    pendingPartners,
+    totalInfo,
+    receivedConsignTotalInfo: receivedConsignTotalInfo.flat(),
+  });
 });
 
 const getPartner = catchAsync(async (req, res) => {
