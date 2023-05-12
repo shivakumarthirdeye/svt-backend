@@ -7,10 +7,15 @@ const receivedConsignmentService = require('./receivedConsignment.service');
 const { bookedConsignmentStatus } = require('../../config/constant');
 const soudhaPartnerService = require('./soudhaPartner.service');
 const moment = require('moment');
+const {
+  changePartnerStatusCompleted,
+  changePartnerStatusPending,
+} = require('../util.service');
 
 const createConsignment = async req => {
   const partnerBody = {
     ...req.body,
+    pendingConsignment: req.body.bookedQuantity,
     createdBy: req.user._id,
   };
   const bookedConsignment = await BookedConsignment.create(partnerBody);
@@ -67,11 +72,6 @@ const getConsignmentOfPartner = async req => {
   delete filter.startDate;
   delete filter.endDate;
 
-  console.log(
-    '🚀 ~ file: bookedConsignment.service.js:57 ~ getConsignmentOfPartner ~ filter:',
-    filter
-  );
-
   const bookedConsignment = await BookedConsignment.paginate(filter, options);
 
   if (!bookedConsignment) {
@@ -116,7 +116,15 @@ const deleteConsignmentOfPartner = async id => {
     );
   }
 
-  return await bookedConsignment.deleteOne();
+  const data = await bookedConsignment.deleteOne();
+
+  if (await getBookingStatus(bookedConsignment.partnerId)) {
+    await changePartnerStatusCompleted(bookedConsignment.partnerId);
+  } else {
+    await changePartnerStatusPending(bookedConsignment.partnerId);
+  }
+
+  return data;
 };
 
 const getPendingConsignment = async req => {
@@ -145,6 +153,7 @@ const getConsignmentTotalInfo = async (partnerId, isPending) => {
       {
         $group: {
           _id: null,
+          totalPendingConsignment: { $sum: '$pendingConsignment' },
           totalBookQuantity: { $sum: '$bookedQuantity' },
           averageRate: { $sum: '$averageRate' },
         },
@@ -160,6 +169,7 @@ const getConsignmentTotalInfo = async (partnerId, isPending) => {
       {
         $group: {
           _id: null,
+          totalPendingConsignment: { $sum: '$pendingConsignment' },
           totalBookQuantity: { $sum: '$bookedQuantity' },
           averageRate: { $sum: '$averageRate' },
         },
@@ -196,26 +206,6 @@ const getBookingStatus = async partnerId => {
   return isAllCompleted;
 };
 
-const changePartnerStatusCompleted = async id => {
-  const partner = SoudhaPartner.findById(id);
-
-  if (!partner) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Partner not found');
-  }
-  return partner.updateOne({
-    soudhaStatus: bookedConsignmentStatus.COMPLETED,
-  });
-};
-const changePartnerStatusPending = async id => {
-  const partner = SoudhaPartner.findById(id);
-
-  if (!partner) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Partner not found');
-  }
-  return partner.updateOne({
-    soudhaStatus: bookedConsignmentStatus.PENDING,
-  });
-};
 module.exports = {
   createConsignment,
   getConsignmentOfPartner,
@@ -225,4 +215,5 @@ module.exports = {
   getConsignment,
   getPendingConsignment,
   getBookingStatus,
+  // getBookingStatus,
 };

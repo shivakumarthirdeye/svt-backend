@@ -24,6 +24,10 @@ const BookedConsignmentSchema = mongoose.Schema(
     averageRate: {
       type: Number,
     },
+    pendingConsignment: {
+      type: Number,
+    },
+
     advancePayment: {
       type: Number,
     },
@@ -65,15 +69,20 @@ BookedConsignmentSchema.plugin(paginate);
 BookedConsignmentSchema.pre('save', function (next) {
   const bookedConsignment = this;
 
-  bookedConsignment.averageRate =
-    bookedConsignment.bookedQuantity * bookedConsignment.rate;
+  if (bookedConsignment.rate && bookedConsignment.bookedQuantity) {
+    bookedConsignment.averageRate =
+      bookedConsignment.bookedQuantity * bookedConsignment.rate;
+  }
   next();
 });
 BookedConsignmentSchema.pre('updateOne', function (next) {
   const bookedConsignment = this.getUpdate();
 
-  bookedConsignment.averageRate =
-    bookedConsignment.bookedQuantity * bookedConsignment.rate;
+  if (bookedConsignment.rate && bookedConsignment.bookedQuantity) {
+    bookedConsignment.averageRate =
+      bookedConsignment.bookedQuantity * bookedConsignment.rate;
+  }
+
   next();
 });
 const BookedConsignment = mongoose.model(

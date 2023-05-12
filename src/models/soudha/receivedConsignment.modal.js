@@ -43,6 +43,9 @@ const ReceivedConsignmentSchema = mongoose.Schema(
     difference: {
       type: Number,
     },
+    pendingConsignment: {
+      type: Number,
+    },
     payment: {
       type: Number,
     },
