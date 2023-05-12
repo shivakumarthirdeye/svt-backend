@@ -30,11 +30,6 @@ const getPendingPartners = catchAsync(async (req, res) => {
     req
   );
 
-  console.log(
-    '🚀 ~ file: soudhaPartner.controller.js:32 ~ getPendingPartners ~ pendingPartners:',
-    pendingPartners
-  );
-
   const totalInfo = await Promise.all(
     pendingPartners.results.map(async element => {
       const totalInfo = await bookedConsignmentService.getConsignmentTotalInfo(

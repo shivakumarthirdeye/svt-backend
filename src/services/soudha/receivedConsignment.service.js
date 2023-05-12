@@ -129,9 +129,9 @@ const getReceivedConsignmentTotalInfo = async (
       {
         $group: {
           _id: null,
-          totalPendingConsignment: { $sum: '$pendingConsignment' },
+          totalAmountPayed: { $sum: '$payment' },
           differenceAmount: { $sum: '$difference' },
-          pendingPayment: { $sum: '$payment' },
+          // pendingPayment: { $sum: '$payment' },
         },
       },
     ]);
@@ -147,9 +147,10 @@ const getReceivedConsignmentTotalInfo = async (
       {
         $group: {
           _id: null,
-          totalPendingConsignment: { $sum: '$pendingConsignment' },
+          // totalPendingConsignment: { $sum: '$pendingConsignment' },
+          totalAmountPayed: { $sum: '$payment' },
           differenceAmount: { $sum: '$difference' },
-          pendingPayment: { $sum: '$payment' },
+          // pendingPayment: { $sum: '$payment' },
         },
       },
     ]);
