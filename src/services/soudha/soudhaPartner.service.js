@@ -14,9 +14,10 @@ const createPartner = async req => {
 
   const partnerData = {
     ...partnerBody,
-    tableId: `${partnerBody.partnerName.split(' ')[0].toLowerCase()}-${
-      (await SoudhaPartner.countDocuments({})) + 1
-    }`,
+    tableId: `${partnerBody.partnerName
+      .split(' ')[0]
+      .toLowerCase()
+      .slice(0, 3)}-${(await SoudhaPartner.countDocuments({})) + 1}`,
   };
 
   return SoudhaPartner.create(partnerData);
