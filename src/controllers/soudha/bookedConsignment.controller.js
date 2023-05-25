@@ -19,10 +19,6 @@ const getConsignmentsByPartner = catchAsync(async (req, res) => {
   const totalInfo = await bookedConsignmentService.getConsignmentTotalInfo(
     partnerId
   );
-  console.log(
-    '🚀 ~ file: bookedConsignment.controller.js:22 ~ getConsignmentsByPartner ~ totalInfo:',
-    totalInfo
-  );
 
   const receivedConsignTotalInfo = await Promise.all(
     bookedConsignments.results.map(async element => {

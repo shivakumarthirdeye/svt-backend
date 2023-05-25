@@ -205,10 +205,6 @@ const updatePendingConsignments = async (
         totalQuantityOfAllReceivedConsignments,
     }
   );
-  console.log(
-    '🚀 ~ file: receivedConsignment.service.js:197 ~ updateBookedConsignment:',
-    updateBookedConsignment
-  );
 };
 
 module.exports = {

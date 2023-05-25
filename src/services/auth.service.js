@@ -24,10 +24,6 @@ const loginUserWithEmailAndPassword = async (email, password) => {
 };
 const loginUserWithNameAndPassword = async (name, password) => {
   const user = await userService.getUserByName(name);
-  console.log(
-    '🚀 ~ file: auth.service.js:27 ~ loginUserWithNameAndPassword ~ user:',
-    user
-  );
 
   if (!user || !(await user.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect name or password');

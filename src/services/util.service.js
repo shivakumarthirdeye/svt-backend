@@ -70,10 +70,6 @@ const getReceivedConsignmentsTotal = async receivedConsignment => {
   const receivedConsignTotalInfo = await Promise.all(
     bookedConsignment.receivedConsignments.map(async element => {
       const receivedConsignment = await ReceivedConsignment.findById(element);
-      console.log(
-        '🚀 ~ file: util.service.js:75 ~ getReceivedConsignmentsTotal ~ receivedConsignment:',
-        receivedConsignment.billingQuantity
-      );
 
       totalQuantityOfAllReceivedConsignments =
         totalQuantityOfAllReceivedConsignments +
